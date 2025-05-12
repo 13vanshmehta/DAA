@@ -1,0 +1,31 @@
+# Ignore all files by default
+*
+
+# Only include .c files
+!*.c
+
+# Include .gitignore itself
+!.gitignore
+
+# Ignore executables
+*.exe
+
+# Ignore object files and other build artifacts
+*.o
+*.obj
+*.out
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# Ignore editor/IDE specific files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
