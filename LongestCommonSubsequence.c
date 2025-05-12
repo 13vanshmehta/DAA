@@ -3,7 +3,7 @@
 #include <string.h>
 
 // Function to find the maximum of two integers
-int max(int x, int y) {
+int maxValue(int x, int y) {
     return x > y ? x : y; 
 }
 
@@ -35,7 +35,7 @@ void findLCS(char s1[], char s2[]) {
             else if (s1[i - 1] == s2[j - 1])
                 L[i][j] = L[i - 1][j - 1] + 1;
             else
-                L[i][j] = max(L[i - 1][j], L[i][j - 1]);
+                L[i][j] = maxValue(L[i - 1][j], L[i][j - 1]);
         }
     }
     
