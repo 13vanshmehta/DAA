@@ -5,16 +5,16 @@
 typedef struct {
     int id;         // Item identifier
     float weight;   // Weight of the item
-    float value;    // Value of the item
-    float ratio;    // Value-to-weight ratio
+    float profit;    // profit of the item
+    float ratio;    // profit-to-weight ratio
 } Item;
 
-// Function to compare items based on their value-to-weight ratio (for qsort)
+// Function to compare items based on their profit-to-weight ratio (for qsort)
 int compare(const void *a, const void *b) {
     Item *itemA = (Item *)a;
     Item *itemB = (Item *)b;
     
-    // Sort in descending order of value-to-weight ratio
+    // Sort in descending order of profit-to-weight ratio
     if (itemB->ratio > itemA->ratio)
         return 1;
     else if (itemB->ratio < itemA->ratio)
@@ -25,52 +25,55 @@ int compare(const void *a, const void *b) {
 
 // Function to solve Fractional Knapsack problem
 float fractionalKnapsack(Item items[], int n, float capacity) {
-    // Calculate value-to-weight ratio for each item
+    // Calculate profit-to-weight ratio for each item
     for (int i = 0; i < n; i++) {
-        items[i].ratio = items[i].value / items[i].weight;
+        items[i].ratio = items[i].profit / items[i].weight;
     }
     
-    // Sort items based on value-to-weight ratio (in descending order)
+    // Sort items based on profit-to-weight ratio (in descending order)
     qsort(items, n, sizeof(Item), compare);
     
-    float totalValue = 0.0;    // Total value of items in knapsack
+    float totalprofit = 0.0;    // Total profit of items in knapsack
     float currentWeight = 0.0; // Current weight in knapsack
     
     printf("\nItems selected:\n");
-    printf("ID\tWeight\tValue\tRatio\tFraction\n");
-    printf("----------------------------------------\n");
+    printf("Item ID\tObject\t\tWeight Added\tProfit Added\n");
+    printf("--------------------------------------------------------\n");
     
-    // Fill the knapsack with items in decreasing order of value-to-weight ratio
+    // Fill the knapsack with items in decreasing order of profit-to-weight ratio
     for (int i = 0; i < n; i++) {
         // If adding the entire item doesn't exceed capacity
         if (currentWeight + items[i].weight <= capacity) {
             // Add the entire item
             currentWeight += items[i].weight;
-            totalValue += items[i].value;
+            totalprofit += items[i].profit;
             
-            printf("%d\t%.2f\t%.2f\t%.2f\t1.00\n", 
-                   items[i].id, items[i].weight, items[i].value, items[i].ratio);
+            printf("%d\t100%% of Item %d\t%.2f\t\t%.2f\n", 
+                   items[i].id, items[i].id, items[i].weight, items[i].profit);
         } else {
             // Add a fraction of the item
             float remainingCapacity = capacity - currentWeight;
             float fraction = remainingCapacity / items[i].weight;
+            float percentTaken = fraction * 100;
+            float weightAdded = items[i].weight * fraction;
+            float profitAdded = items[i].profit * fraction;
             
-            totalValue += items[i].value * fraction;
-            currentWeight += items[i].weight * fraction;
+            totalprofit += profitAdded;
+            currentWeight += weightAdded;
             
-            printf("%d\t%.2f\t%.2f\t%.2f\t%.2f\n", 
-                   items[i].id, items[i].weight, items[i].value, items[i].ratio, fraction);
+            printf("%d\t%.0f%% of Item %d\t%.2f\t\t%.2f\n", 
+                   items[i].id, percentTaken, items[i].id, weightAdded, profitAdded);
             
             // Knapsack is full, break the loop
             break;
         }
     }
     
-    printf("----------------------------------------\n");
+    printf("--------------------------------------------------------\n");
     printf("Total weight: %.2f\n", currentWeight);
-    printf("Total value: %.2f\n", totalValue);
+    printf("Total profit: %.2f\n", totalprofit);
     
-    return totalValue;
+    return totalprofit;
 }
 
 int main() {
@@ -95,21 +98,21 @@ int main() {
         printf("Item %d:\n", i + 1);
         printf("  Weight: ");
         scanf("%f", &items[i].weight);
-        printf("  Value: ");
-        scanf("%f", &items[i].value);
+        printf("  profit: ");
+        scanf("%f", &items[i].profit);
     }
     
     printf("\nItem details:\n");
-    printf("ID\tWeight\tValue\n");
+    printf("ID\tWeight\tprofit\n");
     printf("------------------------\n");
     for (int i = 0; i < n; i++) {
-        printf("%d\t%.2f\t%.2f\n", items[i].id, items[i].weight, items[i].value);
+        printf("%d\t%.2f\t%.2f\n", items[i].id, items[i].weight, items[i].profit);
     }
     
     // Solve the Fractional Knapsack problem
-    float maxValue = fractionalKnapsack(items, n, capacity);
+    float maxprofit = fractionalKnapsack(items, n, capacity);
     
-    printf("\nMaximum value that can be obtained: %.2f\n", maxValue);
+    printf("\nMaximum profit that can be obtained: %.2f\n", maxprofit);
     
     // Free allocated memory
     free(items);

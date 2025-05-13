@@ -1,185 +1,123 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-#include <limits.h>
+#define INT_MAX 999999
 
-// Function to print the optimal parenthesization
-void printOptimalParenthesis(int i, int j, int n, int **bracket, char *name) {
-    // If only one matrix, print its name
-    if (i == j) {
-        printf("%c", name[i]);
-        return;
-    }
+int mc[50][50];
 
-    printf("(");
-    
-    // Get the split point from bracket table
-    int k = bracket[i][j];
-    
-    // Print left part
-    printOptimalParenthesis(i, k, n, bracket, name);
-    
-    // Print right part
-    printOptimalParenthesis(k + 1, j, n, bracket, name);
-    
-    printf(")");
+int minimum(int a, int b) {
+    return (a < b) ? a : b;
 }
 
-// Matrix Chain Multiplication using Dynamic Programming
-void matrixChainMultiplication(int p[], int n) {
-    // Length of the chain is n-1
-    n = n - 1;
+int DynamicProgramming(int arr[], int i, int j) {
+    if (i == j) return 0;
     
-    // Tables for storing results
-    int **m = (int **)malloc(n * sizeof(int *));     // For storing minimum number of operations
-    if (m == NULL) {
-        printf("Memory allocation failed\n");
-        exit(1);
+    if (mc[i][j] != -1) return mc[i][j];
+    
+    mc[i][j] = INT_MAX;
+    for (int k = i; k < j; k++) {
+        mc[i][j] = minimum(mc[i][j], 
+                       DynamicProgramming(arr, i, k) + 
+                       DynamicProgramming(arr, k + 1, j) + 
+                       arr[i - 1] * arr[k] * arr[j]);
     }
-    
-    for(int i = 0; i < n; i++) {
-        m[i] = (int *)malloc(n * sizeof(int));
-        if (m[i] == NULL) {
-            printf("Memory allocation failed\n");
-            exit(1);
-        }
+    return mc[i][j];
+}
+
+void printCostTable(int n) {
+    printf("\nCost Table (DP Table):\n");
+    printf("    ");
+    for (int j = 1; j <= n; j++) {
+        printf("M%-4d", j);
     }
+    printf("\n");
     
-    int **bracket = (int **)malloc(n * sizeof(int *)); // For storing optimal split positions
-    if (bracket == NULL) {
-        printf("Memory allocation failed\n");
-        exit(1);
-    }
-    
-    for(int i = 0; i < n; i++) {
-        bracket[i] = (int *)malloc(n * sizeof(int));
-        if (bracket[i] == NULL) {
-            printf("Memory allocation failed\n");
-            exit(1);
-        }
-    }
-    
-    char *name = (char *)malloc(n * sizeof(char));    // For storing matrix names (A, B, C, ...)
-    if (name == NULL) {
-        printf("Memory allocation failed\n");
-        exit(1);
-    }
-    
-    // Initialize matrix names
-    for (int i = 0; i < n; i++) {
-        name[i] = 'A' + i;
-    }
-    
-    // Initialize m table with 0 for the diagonal (single matrix case)
-    for (int i = 0; i < n; i++) {
-        m[i][i] = 0;
-    }
-    
-    // Build the table in bottom-up manner
-    // l is the chain length
-    for (int l = 2; l <= n; l++) {
-        for (int i = 0; i < n - l + 1; i++) {
-            int j = i + l - 1;
-            m[i][j] = INT_MAX;
-            
-            // Try each possible split position
-            for (int k = i; k < j; k++) {
-                // Calculate cost for this split
-                int cost = m[i][k] + m[k + 1][j] + p[i] * p[k + 1] * p[j + 1];
-                
-                // Update if this is better
-                if (cost < m[i][j]) {
-                    m[i][j] = cost;
-                    bracket[i][j] = k;
-                }
-            }
-        }
-    }
-    
-    // Print the DP table
-    printf("\nDP Table (Minimum number of operations):\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    for (int i = 1; i <= n; i++) {
+        printf("M%-3d", i);
+        for (int j = 1; j <= n; j++) {
             if (j < i) {
-                printf("\t");
+                printf("     ");
+            } else if (i == j) {
+                // Print 0 for diagonal elements
+                printf("%-5d", 0);
+            } else if (mc[i][j] == INT_MAX) {
+                printf("INF  ");
             } else {
-                printf("%d\t", m[i][j]);
+                printf("%-5d", mc[i][j]);
             }
         }
         printf("\n");
     }
-    
-    // Print the dimensions of each matrix
-    printf("\nMatrix Dimensions:\n");
-    for (int i = 0; i < n; i++) {
-        printf("%c: %d x %d\n", name[i], p[i], p[i + 1]);
-    }
+}
 
-    // Print the optimal parenthesization
-    printf("\nOptimal Parenthesization: ");
-    printOptimalParenthesis(0, n - 1, n, bracket, name);
-    
-    // Print the minimum number of operations
-    printf("\nMinimum number of operations: %d\n", m[0][n - 1]);
-    
-
-    
-    // Free allocated memory
-    for (int i = 0; i < n; i++) {
-        free(m[i]);
-        free(bracket[i]);
+void printParenthesis(int i, int j) {
+    if (i == j) {
+        printf("M%d", i);
+        return;
     }
-    free(m);
-    free(bracket);
-    free(name);
+    printf("(");
+    
+    int k;
+    int min = INT_MAX;
+    for (int l = i; l < j; l++) {
+        if (mc[i][l] + mc[l+1][j] + mc[i][j] < min) {
+            min = mc[i][l] + mc[l+1][j] + mc[i][j];
+            k = l;
+        }
+    }
+    
+    printParenthesis(i, k);
+    printf(" x ");
+    printParenthesis(k + 1, j);
+    printf(")");
 }
 
 int main() {
     int n;
-    
-    printf("Enter the number of matrices: ");
+    printf("Enter number of matrices: ");
     scanf("%d", &n);
     
     if (n < 2) {
-        printf("At least 2 matrices are required for matrix chain multiplication.\n");
+        printf("Need at least 2 matrices\n");
         return 1;
     }
     
-    // Array to store dimensions
-    // For n matrices, we need n+1 dimensions
-    int *p = (int *)malloc((n + 1) * sizeof(int));
-    if (p == NULL) {
+    int *dimensions = (int *)malloc((n + 1) * sizeof(int));
+    if (!dimensions) {
         printf("Memory allocation failed\n");
         return 1;
     }
     
-    printf("Enter the dimensions of matrices:\n");
+    printf("\nEnter matrix dimensions:\n");
     for (int i = 0; i < n; i++) {
-        printf("Matrix %c (%d):\n", 'A' + i, i + 1);
-        
+        printf("Matrix %d:\n", i + 1);
         if (i == 0) {
-            printf("  Rows: ");
-            scanf("%d", &p[0]);
-            printf("  Columns: ");
-            scanf("%d", &p[1]);
-        } else {
-            printf("  Rows: %d (fixed from previous matrix)\n", p[i]);
-            printf("  Columns: ");
-            scanf("%d", &p[i + 1]);
+            printf("Rows: ");
+            scanf("%d", &dimensions[0]);
         }
+        printf("Columns: ");
+        scanf("%d", &dimensions[i + 1]);
     }
     
+    memset(mc, -1, sizeof(mc));
+    
     printf("\nMatrix Chain: ");
-    for (int i = 0; i < n; i++) {
-        printf("%c", 'A' + i);
-        if (i < n - 1) printf(" x ");
+    for (int i = 1; i <= n; i++) {
+        printf("M%d", i);
+        if (i < n) printf(" x ");
     }
     printf("\n");
     
-    // Solve the Matrix Chain Multiplication problem
-    matrixChainMultiplication(p, n + 1);
+    int result = DynamicProgramming(dimensions, 1, n);
     
-    // Free allocated memory
-    free(p);
+    // Print the cost table
+    printCostTable(n);
     
+    printf("\nMinimum number of multiplications: %d\n", result);
+    printf("Optimal Parenthesization: ");
+    printParenthesis(1, n);
+    printf("\n");
+    
+    free(dimensions);
     return 0;
 }
