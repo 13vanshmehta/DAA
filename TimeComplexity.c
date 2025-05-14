@@ -13,7 +13,7 @@ UNIT 1: DIVIDE AND CONQUER ALGORITHMS
 2. Quick Sort:
    - Time Complexity: 
      * Best/Average Case: O(n log n)
-     * Worst Case: O(n²) when array is already sorted
+     * Worst Case: O(n²) 
    - Space Complexity: O(log n) for recursion stack
 
 3. Max-Min Problem:
@@ -31,7 +31,8 @@ UNIT 2: GREEDY ALGORITHMS
    - Space Complexity: O(1) excluding input storage
 
 2. Activity Selection Problem:
-   - Time Complexity: O(n log n) for sorting + O(n) for selection = O(n log n)
+   - Time Complexity: O(n log n) for sorting + O(n) for selection = O(n log n) {If Array is not sorted}
+   - Time Complexity: O(n) if Array is already sorted in increasing order of finish times.
    - Space Complexity: O(n) for storing activities
 
 3. Job Sequencing with Deadline:
@@ -47,7 +48,7 @@ UNIT 2: GREEDY ALGORITHMS
    - Space Complexity: O(V + E) for graph and priority queue
 
 6. Dijkstra's Algorithm:
-   - Time Complexity: O(E log V) with binary heap, O(V²) with adjacency matrix
+   - Time Complexity: O(E log V) with binary heap, O(V²) with adjacency matrix, O(E + VlogV) with fibonacci heap
    - Space Complexity: O(V) for distance array and priority queue
 
 7. Coin Change Problem (Greedy):
@@ -62,6 +63,7 @@ UNIT 3: DYNAMIC PROGRAMMING
 
 2. Coin Change Problem (DP):
    - Time Complexity: O(n × amount) where n is number of coin denominations
+   - Time Complexity: O(2^n) without memoization/tabulation (exponential)
    - Space Complexity: O(amount) for 1D table
 
 3. 0/1 Knapsack:
@@ -81,8 +83,8 @@ UNIT 3: DYNAMIC PROGRAMMING
    - Space Complexity: O(n²) for memoization table
 
 7. Traveling Salesperson Problem:
-   - Time Complexity: O(n² × 2ⁿ) using dynamic programming
-   - Space Complexity: O(n × 2ⁿ) for memoization table
+   - Time Complexity: O(n^2 × 2^n) using dynamic programming
+   - Space Complexity: O(n × 2^n) for memoization table
 
 8. Longest Common Subsequence:
    - Time Complexity: O(m × n) where m, n are string lengths
@@ -92,6 +94,7 @@ UNIT 4: BACKTRACKING AND BRANCH-AND-BOUND
 -----------------------------------------------------------------------------
 1. N-Queen Problem:
    - Time Complexity: O(n!) in worst case
+   - Time Complexity: O(2^n + 1)
    - Space Complexity: O(n) for board representation
 
 2. Sum of Subsets:
